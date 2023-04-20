@@ -12,7 +12,9 @@ class PlanController extends Controller
      */
     public function index()
     {
-        //
+       //  return response()->json(['Plans' =>'Test result']);
+       // return Task::all();
+       return Plan::all();
     }
 
     /**
@@ -36,7 +38,14 @@ class PlanController extends Controller
      */
     public function show(Plan $plan)
     {
-        //
+        //1. $plan = Task::where('id',$id)->get();
+        // return $task;
+        $plan = Plan::where('plan_code',$plan)->get();
+        return $plan;
+
+        //2. return TasksResource::collection(
+        // Task::where('id',$id)->get()
+    //);
     }
 
     /**

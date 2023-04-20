@@ -18,10 +18,10 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->integer('amount');
             $table->enum('interval', ['daily', 'weekly', 'monthly','biannually', 'annually'])->default('monthly');
-            $table->string('user_id');
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

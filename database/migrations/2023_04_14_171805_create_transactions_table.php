@@ -24,8 +24,8 @@ return new class extends Migration
             $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
             $table->timestamps();
         
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('subscription_id')->references('id')->on('subscriptions');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('subscription_id')->references('id')->on('subscriptions')->onDelete('cascade');
         });
     }
 
