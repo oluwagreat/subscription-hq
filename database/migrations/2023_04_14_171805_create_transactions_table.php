@@ -13,19 +13,22 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('reference');
-            $table->string('customer_ref');
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('subscription_id')->nullable();
+            $table->string('reference')->unique();
+            $table->string('customer_email');
+            $table->string('customer_phone')->nullable();
+            $table->string('authorization_code')->nullable();
+            $table->string('authorization_url')->nullable();
+            $table->string('access_code')->nullable()->unique();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('gateway_response')->nullable();
             $table->integer('amount');
-            $table->dateTime('paid_at')->nullable();
+            $table->string('paid_at')->nullable();
             $table->string('plan')->nullable();
-            $table->enum('status', ['pending', 'completed', 'failed'])->default('pending');
+            $table->string('status')->default('pending');
             $table->timestamps();
         
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('subscription_id')->references('id')->on('subscriptions')->onDelete('cascade');
+           
         });
     }
 
@@ -34,6 +37,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('transactions', function (Blueprint $table) {
+            $table->dropForeign('user_id');
+        });
         Schema::dropIfExists('transactions');
     }
 };

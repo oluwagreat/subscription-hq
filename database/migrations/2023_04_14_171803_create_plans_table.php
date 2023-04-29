@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('plans', function (Blueprint $table) {
             $table->id()->index();
-            $table->string('plan_code')->unique();
+            $table->string('plan_code')->unique()->nullable();
             $table->string('name');
             $table->text('description')->nullable();
             $table->integer('amount');
@@ -30,6 +30,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('plans', function (Blueprint $table) {
+            $table->dropForeign('user_id');
+        });
         Schema::dropIfExists('plans');
     }
 };

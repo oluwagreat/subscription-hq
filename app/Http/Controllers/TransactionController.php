@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TransactionRequest;
+use App\Http\Resources\TransactionResource;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 
@@ -12,7 +14,12 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        //
+        $transactions = TransactionResource::collection(Transaction::all());
+        return response()->json([
+            'status' => true,
+            'message' => 'Transactions retrieved successfully',
+            'transactions' => $transactions
+        ],200);
     }
 
     /**
@@ -26,9 +33,27 @@ class TransactionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TransactionRequest $request)
     {
-        //
+         $request->validated($request->all());
+
+        $transaction = Transaction::create([
+            'user_id' => 1, //Auth::user()->id,
+            'customer_email' => $request->customer_email,
+            'customer_phone' => $request->customer_phone,
+            'amount' => $request->amount * 100,
+            'reference' => $request->reference,
+            'authorization_url' => 'https://checkout.paystack.com/0peioxfhpn',
+            'access_code' => 'access_code'
+        ]);
+
+        $created_transaction = new TransactionResource($transaction);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Authorization URL created',
+            'transaction' => $created_transaction
+        ], 201);
     }
 
     /**

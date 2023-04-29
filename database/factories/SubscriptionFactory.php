@@ -1,19 +1,22 @@
 <?php
 
-namespace Database\Seeders;
+namespace Database\Factories;
 
-use App\Models\Subscription;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-class SubscriptionSeeder extends Seeder
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Subscription>
+ */
+class SubscriptionFactory extends Factory
 {
     /**
-     * Run the database seeds.
+     * Define the model's default state.
+     *
+     * @return array<string, mixed>
      */
-    public function run(): void
+    public function definition(): array
     {
-        Subscription::factory()->create([
+        return [
             'user_id' => 1,  
             'customer_email' => 'btobi@3wc4life.com', 
             'customer_phone' => '08183221437',
@@ -26,6 +29,6 @@ class SubscriptionSeeder extends Seeder
             'starts_at' => date("Y-m-d H:i:s",time()),
             'ends_at' => null,
             'next_payment_date' => null
-        ]);
+        ];
     }
 }

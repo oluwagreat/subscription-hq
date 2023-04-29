@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePlanRequest;
+use App\Http\Resources\PlanResource;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 
@@ -12,9 +14,14 @@ class PlanController extends Controller
      */
     public function index()
     {
-       //  return response()->json(['Plans' =>'Test result']);
-       // return Task::all();
-       return Plan::all();
+        $plans = PlanResource::collection(Plan::all());
+        return response()->json([
+            'status' => true,
+            'message' => 'Plans retrieved successfully',
+            'plans' => $plans
+        ], 200);
+
+       //return Plan::all();
     }
 
     /**
@@ -28,24 +35,58 @@ class PlanController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StorePlanRequest $request)
     {
-        //
+      //  $request->validated($request->all());
+        $plan = Plan::create([
+            'user_id' => 1, //Auth::user()->id,
+            'name' => $request->name,
+            'amount' => $request->amount * 100,
+            'interval' => $request->interval,
+            'description' => $request->description,
+        ]);
+        
+        $created_plan = new PlanResource($plan);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Plan created successfully',
+            'plan' => $created_plan
+        ], 201);
+
+        
+        
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Plan $plan)
+    public function show($plan_code)
     {
-        //1. $plan = Task::where('id',$id)->get();
-        // return $task;
-        $plan = Plan::where('plan_code',$plan)->get();
-        return $plan;
+        // $plan = Plan::where('id',$plan)->get();
+        // return $plan; 
 
-        //2. return TasksResource::collection(
-        // Task::where('id',$id)->get()
-    //);
+        $plan = PlanResource::collection(Plan::where('plan_code',$plan_code)->get());
+        return response()->json([
+            'status' => true,
+           'message' => 'Plan retrieved',
+           'plan' => $plan
+       ], 200);
+    }
+
+    public function single($plan_code)
+    {
+
+        // $plan = Plan::where('plan_code',$plan_code)->get();
+        //  return $plan;
+
+     $plan = PlanResource::collection(Plan::where('plan_code',$plan_code)->get());
+     return response()->json([
+        'status' => true,
+        'message' => 'Plan retrieved',
+        'plan' => $plan
+    ], 200);
+        
     }
 
     /**
