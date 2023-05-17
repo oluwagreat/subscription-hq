@@ -21,6 +21,8 @@ return new class extends Migration
             $table->string('access_code')->nullable()->unique();
             $table->unsignedBigInteger('user_id')->nullable();
             $table->string('gateway_response')->nullable();
+            $table->string('callback_url');
+            $table->string('plan_code')->nullable();
             $table->integer('amount');
             $table->string('paid_at')->nullable();
             $table->string('plan')->nullable();

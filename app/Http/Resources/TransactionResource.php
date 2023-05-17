@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,7 +27,9 @@ class TransactionResource extends JsonResource
        'gateway_response'=> $this->gateway_response,
        'amount'=> $this->amount/100,
        'paid_at'=> $this->paid_at,
-       'plan'=> $this->plan,
+       'plan' => Plan::where('plan_code',$this->plan_code)->get(["plan_code","name"]) ,
+      // 'plan_code'=> $this->plan_code,
+       'callback_url' => $this->callback_url,
        'status'=>$this->status,
        'created_at'=>$this->created_at,
        'updated_at'=>$this->updated_at

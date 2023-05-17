@@ -12,6 +12,17 @@ class Transaction extends Model
         'reference',  
         'customer_email', 
         'customer_phone',
-        'amount'
+        'amount',
+        'callback_url',
+            'plan_code',
+            'access_code',
+            'gateway_response',
+            'plan',
+            'paid_at',
+            'authorization_url',
+            'authorization_code',
+            'status',
+            'user_id',
+            
     ];
 }
