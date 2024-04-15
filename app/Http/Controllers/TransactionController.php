@@ -103,11 +103,13 @@ class TransactionController extends Controller
 
         if($response->ok()){
             $response = $response->json();
+
             DB::table('transactions')
             ->where('reference', $reference)
             ->update([
-                'authorization_code' => $response['data']['authorization']['authorization_code'],
+              //  'authorization_code' => $response['data']['authorization']['authorization_code'],
                 'gateway_response' => $response['data']['gateway_response'],
+                'status' => $response['data']['status'],
             ]);
   
   
