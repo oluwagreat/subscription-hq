@@ -40,11 +40,21 @@ class TransactionController extends Controller
     {
          $request->validated($request->all());
          $amount = $request->amount * 100;
+
          if(isset($request->plan_code) && !empty($request->plan_code)){
-         $body = ['amount' => $amount , 'email' =>$request->customer_email,'plan_code' => $request->plan_code, 'reference'=>$request->reference, 'callback_url' => $request->callback_url];
+         $body = [
+            'amount' => $amount , 'email' =>$request->customer_email,
+            'plan_code' => $request->plan_code, 
+            'reference'=>$request->reference, 
+            'callback_url' => $request->callback_url
+        ];
          }
          else{
-            $body = ['amount' => $amount , 'email' =>$request->customer_email,'reference'=>$request->reference, 'callback_url' => $request->callback_url];
+            $body = [
+                'amount' => $amount , 'email' =>$request->customer_email,
+                'reference'=>$request->reference, 
+                'callback_url' => $request->callback_url
+            ];
          }
 
          $url = env('PAYSTACK_TRANSACTION_URL',"https://api.paystack.co/transaction/initialize");

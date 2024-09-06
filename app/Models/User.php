@@ -21,6 +21,14 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'remember_token',
+        'email_verified_at',
+        'category',
+        'dob',
+        'zone',
+        'taken_quiz',
+        'taken_audio',
+        'to_take'
     ];
 
     /**

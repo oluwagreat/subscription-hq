@@ -18,6 +18,12 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
+            $table->string('dob')->nullable();
+            $table->string('zone')->nullable();
+            $table->string('category')->nullable();
+            $table->boolean('taken_quiz')->default(false);
+            $table->boolean('taken_audio')->default(false);
+            $table->string('to_take')->default('multichoice');
             $table->timestamps();
         });
     }

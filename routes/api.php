@@ -17,9 +17,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+include __DIR__ . '/jgc.php';
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// Route::get('test', function () {
+//     return response()->json(['status' => true, 'message' => "API v1 is up and running", 'data' => [], 'errors' => [],], 200);
+// });
 
 //Route::get('plans/{plan_code}', [PlanController::class, 'single']);
 //Route::post('/subscriptions', [SubscriptionController::class, 'store']);
@@ -27,3 +33,5 @@ Route::get('/transactions/verify/{id}',[TransactionController::class,'verify']);
 Route::resource('/plans',PlanController::class);
 Route::resource('/subscriptions',SubscriptionController::class);
 Route::resource('/transactions',TransactionController::class);
+
+
