@@ -23,6 +23,7 @@ class Transaction extends Model
             'authorization_code',
             'status',
             'user_id',
+            'frequency',
             
     ];
 }

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
+use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
@@ -39,6 +40,7 @@ class TransactionController extends Controller
     public function store(TransactionRequest $request)
     {
          $request->validated($request->all());
+         $amountInNaira = $request->amount;
          $amount = $request->amount * 100;
 
          if(isset($request->plan_code) && !empty($request->plan_code)){
@@ -57,26 +59,47 @@ class TransactionController extends Controller
             ];
          }
 
+         //save transaction
+        $transaction = Transaction::create([
+                    'user_id' => 1, //Auth::user()->id,
+                    'customer_email' => $request->customer_email,
+                    'customer_phone' => $request->customer_phone,
+                    'amount' => $amountInNaira,
+                    'reference' => $request->reference,
+                    'plan_code' => $request->plan_code,
+                    'callback_url' => $request->callback_url,
+                    'frequency' => $request->frequency
+                ]);
+
+        //send request to paystack
          $url = env('PAYSTACK_TRANSACTION_URL',"https://api.paystack.co/transaction/initialize");
          $token = env('PAYSTACK_KEY');
 
          $response = Http::withToken($token)->withHeaders(['content-type' => 'application/json'])
                                             ->post($url,$body);
 
+        //Log the response
+        Log::info("Paystack Response: ".$response);
+
         if($response->ok()){
           $response = $response->json();
+          $authURL = $response['data']['authorization_url'];
 
-        $transaction = Transaction::create([
-            'user_id' => 1, //Auth::user()->id,
-            'customer_email' => $request->customer_email,
-            'customer_phone' => $request->customer_phone,
-            'amount' => $amount,
-            'reference' => $request->reference,
-            'authorization_url' => $response['data']['authorization_url'], //'https://checkout.paystack.com/0peioxfhpn',
-            'access_code' => $response['data']['access_code'], //Str::random(10),
-            'plan_code' => $request->plan_code,
-            'callback_url' => $request->callback_url
-        ]);
+          //if authorization url is not set
+          if (!isset($authURL) || empty($authURL)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'An error occured',
+                'gateway_response' => $response
+            ]);
+          }
+
+          //save transaction
+          $transaction->update([
+            'authorization_url' => $authURL,
+            'access_code' => $response['data']['access_code'],
+          ]);
+      
 
         $created_transaction = new TransactionResource($transaction);
 
@@ -110,6 +133,8 @@ class TransactionController extends Controller
 
         $response = Http::withToken($token)->withHeaders(['content-type' => 'application/json'])
                                            ->get($url);
+
+        Log::info("Paystack Verify Response: ".$response);
 
         if($response->ok()){
             $response = $response->json();
