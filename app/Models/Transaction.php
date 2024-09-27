@@ -24,6 +24,12 @@ class Transaction extends Model
             'status',
             'user_id',
             'frequency',
+        'subscription_id',
+        'description'
             
     ];
+
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

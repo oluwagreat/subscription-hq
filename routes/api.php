@@ -3,6 +3,7 @@
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TransactionController;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -26,6 +27,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('test', function () {
     return response()->json(['status' => true, 'message' => "API v1 is up and running", 'data' => [], 'errors' => [],], 200);
 });
+
+Route::get('/callback', [TransactionController::class, 'callback'])->name('paystack.callback');
 
 //Route::get('plans/{plan_code}', [PlanController::class, 'single']);
 //Route::post('/subscriptions', [SubscriptionController::class, 'store']);

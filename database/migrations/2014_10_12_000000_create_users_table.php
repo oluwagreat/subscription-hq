@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->text('webhook_url')->nullable();
+            $table->text('callback_url')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->rememberToken();
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->boolean('taken_quiz')->default(false);
             $table->boolean('taken_audio')->default(false);
             $table->string('to_take')->default('multichoice');
+
             $table->timestamps();
         });
     }

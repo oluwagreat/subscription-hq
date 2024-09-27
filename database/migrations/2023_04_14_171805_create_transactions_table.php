@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('paid_at')->nullable();
             $table->string('plan')->nullable();
             $table->string('status')->default('pending');
+            $table->string('description')->nullable();
             $table->timestamps();
         
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

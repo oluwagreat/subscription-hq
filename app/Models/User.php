@@ -28,7 +28,9 @@ class User extends Authenticatable
         'zone',
         'taken_quiz',
         'taken_audio',
-        'to_take'
+        'to_take',
+        'callback_url',
+        'webhook_url'
     ];
 
     /**
@@ -49,4 +51,9 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

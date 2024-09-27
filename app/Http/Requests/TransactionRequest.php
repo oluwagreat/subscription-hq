@@ -26,9 +26,10 @@ class TransactionRequest extends FormRequest
             'customer_phone' => ['nullable','numeric'],
             'amount' => ['required','integer'],
             'reference' => ['required','string','unique:transactions'],
-            'callback_url' => ['required','url'],
+            'callback_url' => ['nullable','url'],
             'plan_code' => ['string','nullable','exists:plans,plan_code'],
             'frequency' => ['string','nullable','in:daily,weekly,monthly,yearly'],
+            'description' => ['nullable','string','max:500'],
         ];
     }
 }
