@@ -30,6 +30,9 @@ Route::get('test', function () {
 
 Route::get('/callback', [TransactionController::class, 'callback'])->name('paystack.callback');
 
+Route::post('paystack/webhook', [TransactionController::class, 'paystackWebhook'])->name('paystack.webhook');
+Route::post('paystack/charge', [SubscriptionController::class, 'initiateCharge'])->name('paystack.charge');
+
 //Route::get('plans/{plan_code}', [PlanController::class, 'single']);
 //Route::post('/subscriptions', [SubscriptionController::class, 'store']);
 Route::get('/transactions/verify/{id}',[TransactionController::class,'verify']);

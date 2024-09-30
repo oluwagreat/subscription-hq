@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\TransactionSchedule;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Http;
 use App\Http\Requests\TransactionRequest;
 use App\Http\Resources\TransactionResource;
@@ -236,6 +237,7 @@ class TransactionController extends Controller
     {
         $noOfDays = $this->getScheduleDays($transaction->frequency);
         $startsAt = now()->addDays($noOfDays);
+        $customer_phone = $response['data']['customer']['phone'] ?? null;
         $schedule = TransactionSchedule::create([
             'transaction_id' => $transaction->id,
             'user_id' => $transaction->user_id,
@@ -243,6 +245,7 @@ class TransactionController extends Controller
             'starts_at' => $startsAt,
             'next_payment_date' => $startsAt,
             'frequency' => $transaction->frequency,
+            'description' => $transaction->description,
             'authorization_code' => $response['data']['authorization']['authorization_code'] ?? null,
             'bin' => $response['data']['authorization']['bin'] ?? null,
             'last_four' => $response['data']['authorization']['last4'] ?? null,
@@ -261,7 +264,7 @@ class TransactionController extends Controller
             'customer_first_name' => $response['data']['customer']['first_name'] ?? null,
             'customer_last_name' => $response['data']['customer']['last_name'] ?? null,
             'customer_code' => $response['data']['customer']['customer_code'] ?? null,
-            'customer_phone' => $response['data']['customer']['phone'] ?? null,        
+            'customer_phone' => $transaction->customer_phone ?? $customer_phone,        
         ]);
 
         //update subscription history
@@ -290,4 +293,53 @@ class TransactionController extends Controller
                 return 7;
         }
     }
+
+    public function paystackWebhook()
+    {
+        // Retrieve the request's body
+        $input = @file_get_contents("php://input");
+        $secretKey = env('PAYSTACK_KEY');
+        // define('PAYSTACK_SECRET_KEY','env');
+
+        //log in file
+        $filePath = storage_path('app/paystacklog.txt');
+        // // Write the data to the file
+        $dataToWrite = date("Y-m-d h:i:sa");
+        $dataToWrite .= $input;
+        File::append($filePath, $dataToWrite);
+        File::append($filePath, "\n");
+
+        http_response_code(200);
+
+        // validate event do all at once to avoid timing attack
+        // if($_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac('sha512', $input, $secretKey))
+        //    exit();
+        if (!isset($_SERVER['HTTP_X_PAYSTACK_SIGNATURE']) || !hash_equals($_SERVER['HTTP_X_PAYSTACK_SIGNATURE'], hash_hmac('sha512', $input, $secretKey))) {
+            Log::error('Invalid paystack signature ' . $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] . ' - ' . hash_hmac('sha512', $input, $secretKey));
+            exit();
+        }
+
+
+        // parse event (which is json string) as object
+        $input = json_decode($input, true);
+
+        Log::error("Incoming paystack webhook :", $input);
+
+        // Do something - that will not take long - with $event
+        $event = $input['event'];
+
+
+        if ($event == "charge.success") {
+
+            http_response_code(200);
+        } elseif ($event == "transfer.success" || $event == "transfer.failed") {
+
+            http_response_code(200);
+        } elseif ($event == "invoice.update") {
+            //subscription update
+        }
+
+        http_response_code(200);
+    }
+
 }

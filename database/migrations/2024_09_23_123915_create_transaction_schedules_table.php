@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('last_payment_date')->nullable();
             $table->timestamp('next_payment_date')->nullable();
             $table->timestamp('next_attempt_date')->nullable();
+            $table->text('description')->nullable();
             $table->string('frequency')->nullable();
             $table->string('customer_email');
             $table->integer('amount');
